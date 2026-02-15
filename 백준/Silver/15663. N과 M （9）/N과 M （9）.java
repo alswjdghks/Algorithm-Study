@@ -10,7 +10,7 @@ public class Main {
     static int[] numbers;
     static int[] print;
     static boolean[] visited;
-
+    static StringBuilder sb = new StringBuilder();
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
@@ -28,14 +28,15 @@ public class Main {
 
         Arrays.sort(numbers);
         permutation(0);
+        System.out.println(sb.toString());
     }
 
     private static void permutation(int idx) {
         if (idx == M){
             for (int i = 0; i < M; i++) {
-                System.out.print(print[i] + " ");
+               sb.append(print[i] + " ");
             }
-            System.out.println();
+            sb.append("\n");
             return;
         }
 
