@@ -9,7 +9,7 @@ public class Main {
     static int M;
     static int[] numbers;
     static int[] print;
-    static int[] visitedNum = new int[10001];
+    static boolean[] visited;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -19,15 +19,14 @@ public class Main {
 
         numbers = new int[N];
         print = new int[M];
+        visited = new boolean[N];
 
         st = new StringTokenizer(br.readLine());
         for (int i = 0; i < N; i++) {
             numbers[i] = Integer.parseInt(st.nextToken());
-            visitedNum[numbers[i]]++;
         }
 
         Arrays.sort(numbers);
-        numbers = Arrays.stream(numbers).distinct().toArray();
         permutation(0);
     }
 
@@ -40,13 +39,15 @@ public class Main {
             return;
         }
 
-        for(int i = 0 ; i < numbers.length ; i++){
-            if(visitedNum[numbers[i]] > 0){
-                visitedNum[numbers[i]]--;
-                print[idx] = numbers[i];
-                permutation(idx+1);
-                visitedNum[numbers[i]]++;
-            }
+        int prev = Integer.MIN_VALUE; // 이번 depth에서 똑같은 수 사용하는 skip을 위한 수
+        for(int i = 0 ; i < N ; i++){
+            if(visited[i]) continue;
+            if (numbers[i] == prev) continue;
+            visited[i] = true;
+            print[idx] = numbers[i];
+            prev = numbers[i];
+            permutation(idx + 1);
+            visited[i] = false;
         }
 
     }
