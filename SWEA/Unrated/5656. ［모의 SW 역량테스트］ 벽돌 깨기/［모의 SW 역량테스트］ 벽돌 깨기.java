@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayDeque;
 import java.util.Queue;
+import java.util.Stack;
 import java.util.StringTokenizer;
 
 public class Solution {
@@ -121,21 +122,20 @@ public class Solution {
 			}
 		}
 	}
-
+	
+	static Stack<Integer> stack = new Stack<>();
 	static void down(int[][] map) { // 별돌 내리기
 		// 모든 열에 대해 처리 (열 고정 후 처리)
 		for (int c = 0; c < W; c++) {
-			int er = H - 1;
-			while (er >= 0 && map[er][c] != 0)
-				--er;
-			if (er < 0)
-				continue;
-			for (int r = er - 1; r >= 0; r--) {
-				if (map[r][c] != 0) {
-					map[er][c] = map[r][c];
+			for(int r = 0 ; r < H ; r++) {
+				if(map[r][c] != 0) {
+					stack.push(map[r][c]);
 					map[r][c] = 0;
-					--er;
 				}
+			}
+			int r = H-1;
+			while(!stack.isEmpty()) {
+				map[r--][c] = stack.pop();
 			}
 		}
 	}
