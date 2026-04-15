@@ -7,56 +7,61 @@ public class Solution {
 	static StringBuilder sb = new StringBuilder();
 	static StringTokenizer st;
 	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
-	static int N;
-	static int M;
-	static boolean[][] map;
+	static int N, adj[][];
+	static int cnt;
 
 	public static void main(String[] args) throws IOException {
 		int TC = Integer.parseInt(br.readLine());
 		for (int tc = 1; tc <= TC; tc++) {
-			int result = 0;
 			N = Integer.parseInt(br.readLine());
-			M = Integer.parseInt(br.readLine());
-			map = new boolean[N + 1][N + 1];
+			int M = Integer.parseInt(br.readLine());
+
+			adj = new int[N + 1][N + 1];
 
 			for (int i = 0; i < M; i++) {
 				st = new StringTokenizer(br.readLine());
-				int start = Integer.parseInt(st.nextToken());
-				int end = Integer.parseInt(st.nextToken());
+				int a = Integer.parseInt(st.nextToken());
+				int b = Integer.parseInt(st.nextToken());
 
-				map[start][end] = true;
+				adj[a][b] = 1; // a 보다 b가 크다.
 			}
 
-			for (int k = 1; k <= N; k++) {
-				for (int i = 1; i <= N; i++) {
-					for (int j = 1; j <= N; j++) {
-						map[i][j] = (map[i][k] && map[k][j]) || map[i][j];
-					}
-				}
+			int answer = 0; // 자신의 키순서를 알 수 있는 학생 수
+			for (int i = 1; i <= N; i++) {
+				cnt = 0;
+				boolean[] visited = new boolean[N + 1];
+				gtDFS(i, visited);
+				ltDFS(i, visited);
+				if (cnt == N - 1)
+					++answer;
 			}
+			System.out.println("#" + tc + " " + answer);
+		}
+	}
 
-			for (int n = 1; n <= N; n++) {
-				int tall = 0;
-				int small = 0;
-				for (int i = 1; i <= N; i++) {
-					if (n == i) {
-						continue;
-					} else {
-						if (map[n][i]) { // n행에서 참인 결과 -> 나보다 크다.
-							tall++;
-						}
-						if (map[i][n]) { // n열에서 참인 결과 -> 나보다 작다.
-							small++;
-						}
-					}
-				}
+	private static void gtDFS(int cur, boolean[] visited) { // 자신보다 큰 학생따라 탐색
+		// 방문 처리
+		visited[cur] = true;
 
-				if (tall + small == N - 1) { // 나보다 큰 사람 + 나보다 작은 사람 = N-1 인 경우 자신의 키가 몇번째 인지 아는 경우
-					result++;
-				}
+		// 현 정점의 인접정점 중 미방문 정점 따라 탐색
+		for (int i = 1; i <= N; i++) {
+			if (adj[cur][i] == 1 && !visited[i]) {
+				++cnt;
+				gtDFS(i, visited);
 			}
-			System.out.println("#" + tc + " " + result);
+		}
+	}
+
+	private static void ltDFS(int cur, boolean[] visited) { // 자신보다 작은 학생따라 탐색
+		// 방문 처리
+		visited[cur] = true;
+
+		// 현 정점의 인접정점 중 미방문 정점 따라 탐색
+		for (int i = 1; i <= N; i++) {
+			if (adj[i][cur] == 1 && !visited[i]) {
+				++cnt;
+				ltDFS(i, visited);
+			}
 		}
 	}
 }
