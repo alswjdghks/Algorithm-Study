@@ -7,61 +7,63 @@ public class Solution {
 	static StringBuilder sb = new StringBuilder();
 	static StringTokenizer st;
 	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-	static int N, adj[][];
-	static int cnt;
+
+	static int N;
+	static int M;
+	static int[][] adj;
 
 	public static void main(String[] args) throws IOException {
 		int TC = Integer.parseInt(br.readLine());
 		for (int tc = 1; tc <= TC; tc++) {
+			int result = 0;
 			N = Integer.parseInt(br.readLine());
-			int M = Integer.parseInt(br.readLine());
-
+			M = Integer.parseInt(br.readLine());
 			adj = new int[N + 1][N + 1];
 
 			for (int i = 0; i < M; i++) {
 				st = new StringTokenizer(br.readLine());
-				int a = Integer.parseInt(st.nextToken());
-				int b = Integer.parseInt(st.nextToken());
+				int start = Integer.parseInt(st.nextToken());
+				int end = Integer.parseInt(st.nextToken());
 
-				adj[a][b] = 1; // a 보다 b가 크다.
+				adj[start][end] = 1;
 			}
 
-			int answer = 0; // 자신의 키순서를 알 수 있는 학생 수
-			for (int i = 1; i <= N; i++) {
-				cnt = 0;
-				boolean[] visited = new boolean[N + 1];
-				gtDFS(i, visited);
-				ltDFS(i, visited);
-				if (cnt == N - 1)
-					++answer;
+			for (int k = 1; k <= N; k++) { // 경유학생
+				for (int i = 1; i <= N; i++) { // 출발학생
+					// 출발학생과 경유학생이 같으면 경유효과 없음!! 따라서 Skip
+					//
+					if (i == k || adj[i][k] == 0)
+						continue;
+
+					for (int j = 1; j <= N; j++) { // 도착학생(i가 키관계를 알고싶은 학생 j)
+						if (adj[i][j] == 1)
+							continue;
+						adj[i][j] = adj[i][k] & adj[k][j];
+					}
+				}
 			}
-			System.out.println("#" + tc + " " + answer);
-		}
-	}
 
-	private static void gtDFS(int cur, boolean[] visited) { // 자신보다 큰 학생따라 탐색
-		// 방문 처리
-		visited[cur] = true;
+			for (int n = 1; n <= N; n++) {
+				int tall = 0;
+				int small = 0;
+				for (int i = 1; i <= N; i++) {
+					if (n == i) {
+						continue;
+					} else {
+						if (adj[n][i] == 1) { // n행에서 참인 결과 -> 나보다 크다.
+							tall++;
+						}
+						if (adj[i][n] == 1) { // n열에서 참인 결과 -> 나보다 작다.
+							small++;
+						}
+					}
+				}
 
-		// 현 정점의 인접정점 중 미방문 정점 따라 탐색
-		for (int i = 1; i <= N; i++) {
-			if (adj[cur][i] == 1 && !visited[i]) {
-				++cnt;
-				gtDFS(i, visited);
+				if (tall + small == N - 1) { // 나보다 큰 사람 + 나보다 작은 사람 = N-1 인 경우 자신의 키가 몇번째 인지 아는 경우
+					result++;
+				}
 			}
-		}
-	}
-
-	private static void ltDFS(int cur, boolean[] visited) { // 자신보다 작은 학생따라 탐색
-		// 방문 처리
-		visited[cur] = true;
-
-		// 현 정점의 인접정점 중 미방문 정점 따라 탐색
-		for (int i = 1; i <= N; i++) {
-			if (adj[i][cur] == 1 && !visited[i]) {
-				++cnt;
-				ltDFS(i, visited);
-			}
+			System.out.println("#" + tc + " " + result);
 		}
 	}
 }
