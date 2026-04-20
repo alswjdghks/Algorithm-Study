@@ -19,6 +19,7 @@ class Solution {
         for(String name : participant){
             if(map.get(name) == 1){
                 answer = name;
+                break;
             }
         }
         
